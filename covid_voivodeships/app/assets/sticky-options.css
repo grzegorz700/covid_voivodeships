@@ -1,0 +1,5 @@
+.sticky-options {
+    z-index: 1020;
+    position: sticky;
+    top: 5px;
+}
