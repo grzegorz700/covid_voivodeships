@@ -12,5 +12,5 @@ dash_core_components==1.13.0
 jsonnet==0.16.0
 beautifulsoup4==4.9.3
 dash_bootstrap_components==0.10.7
-ipython==7.19.0
+ipython
 gunicorn
