@@ -4,7 +4,7 @@ from configparser import ConfigParser
 
 parser = argparse.ArgumentParser()
 default_data_folder = os.path.join('.', 'data')
-parser.add_argument('--detail_voiv_data_dir', default=default_data_folder,
+parser.add_argument('--data_dir', default=default_data_folder,
                     help='Set directory for store downloaded data')
 parser.add_argument('--store_as_relative_path', action='store_true',
                     help='Force to use as relative data to the current '
