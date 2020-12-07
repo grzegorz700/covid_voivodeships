@@ -178,7 +178,7 @@ def map_hover_data(hover_data, pathname, normalize, moving_mean):
     else:
         daily_change = True
     voiv_name = str(hover_data['points'][0]['hovertext'])
-    print("Hover over: ", voiv_name)
+    print("Hover over: ", voiv_name.encode('utf-8'))
     voiv = voivs[unidecode(voiv_name)]
     plot = plot_single_voiv(voiv, daily_change=daily_change, moving_mean=moving_mean, normalize=normalize != 0)
     plot.update_layout(yaxis_title="", legend_title="Grupa osób")
