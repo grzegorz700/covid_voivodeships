@@ -18,7 +18,7 @@ def load_geojson(detailed=True):
     else:
         json_path = 'poland-provinces.json'
     pl_voiv_geojson_file_path = os.path.join(ps.data_dir, 'topologies', json_path)
-    with open(pl_voiv_geojson_file_path) as pl_voiv_geojson_f:
+    with open(pl_voiv_geojson_file_path, encoding='UTF-8') as pl_voiv_geojson_f:
         pl_voiv_geojson = json.load(pl_voiv_geojson_f)
     return pl_voiv_geojson
 

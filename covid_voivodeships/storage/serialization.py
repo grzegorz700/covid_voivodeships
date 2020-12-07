@@ -18,7 +18,7 @@ def save_vol_data_by_csv(ps, vol):
     for tname, tobj in vol.tables.items():
         tobj.data.to_csv(file_name_csv.format(tname))
     
-    with open(file_name_json, 'w') as f:
+    with open(file_name_json, 'w', encoding='UFT-8') as f:
         json.dump(vol.variables, f)
     return out_dir
 
@@ -34,7 +34,7 @@ def load_vol_data_by_csv(out_dir):
         date = split_dirs[-3]
     else:
         date = split_dirs[-2]
-    with open(os.path.join(out_dir, "variables.json"), 'r') as f:
+    with open(os.path.join(out_dir, "variables.json"), 'r', encoding='UFT-8') as f:
         variables = json.load(f)
     
     tables = {}
