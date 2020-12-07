@@ -13,4 +13,5 @@ jsonnet==0.16.0
 beautifulsoup4==4.9.3
 dash_bootstrap_components==0.10.7
 ipython
+lxml
 gunicorn
