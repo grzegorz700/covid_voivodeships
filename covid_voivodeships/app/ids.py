@@ -7,7 +7,6 @@ class PageIDS:
     LAST_UPDATE = 'last-update-label'
 
 
-
 class TabIDs:
     TAB_BAR = 'tabs'
     TAB_DIV_CONTENT = 'tabs-content'
@@ -27,7 +26,6 @@ class OptionsIDs:
     UPDATE_SPINNER = 'update-spinner'
     CHECK_UPDATE = 'update-data-btn'
     SHOW_OPTIONS_BTN = 'options-collapse-btn'
-    VOIVS_NAMES_DROPDOWN = 'voivs-names-dropdown'
     NORMALIZATION = 'normalization-picker'
     MOVING_AVG = 'moving-average-picker'
     OPTIONS_COLLAPSE = 'options-collapse'
@@ -38,7 +36,7 @@ class GraphIDs:
     MAIN_SUBGRAPHS = 'main-subgraphs'
     SHAPE_OF_SPREAD = 'graph-shape-of-spread'
     DAY_CASES_PIECHART = 'graph-daily-cases-piechart'
-    DAY_CASES_PER_WEEK = 'graph-day-dases-per-week'
+    DAY_CASES_PER_WEEK = 'graph-day-cases-per-week'
 
     @staticmethod
     def get_main_separate_voiv_map_id(voiv_name):
@@ -46,6 +44,7 @@ class GraphIDs:
 
 
 class BadgesIDs:
+    INFECTED = 'infected-badge'
     ILL = 'ill-badge'
     HEALTHY = 'healthy-badge'
     DEAD = 'dead-badge'

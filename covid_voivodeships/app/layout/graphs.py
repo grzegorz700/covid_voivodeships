@@ -9,10 +9,12 @@ from covid_voivodeships.plots.daily_cases import figure_daily
 import plotly.graph_objects as go
 
 GRAPH_HEIGHT = 200
+TAB_GRAPH_HEIGHT = 600
+MAP_HEIGHT = 450
 
 
 hover_map_graph = dcc.Graph(
-    id=IDS.MAP, style={'height': '450px'},
+    id=IDS.MAP, style={'height': f'{MAP_HEIGHT}px'},
     config={'scrollZoom': False,
             'showAxisRangeEntryBoxes': False,
             'showAxisDragHandles': False}
@@ -20,17 +22,12 @@ hover_map_graph = dcc.Graph(
 
 
 def empty_plot(label_annotation):
-    '''
-    Returns an empty plot with a centered text.
-    '''
-
-    trace1 = go.Scatter(
+    """Returns an empty plot with a centered text."""
+    trace = go.Scatter(
         x=[],
         y=[]
     )
-
-    data = [trace1]
-
+    data = [trace]
     layout = go.Layout(
         showlegend=False,
         xaxis=dict(
@@ -64,14 +61,12 @@ def empty_plot(label_annotation):
             )
         ]
     )
-
     fig = go.Figure(data=data, layout=layout)
-    # END
     return fig
 
 
 _empty_plot_figure = empty_plot('🖱 Aby zobaczyć wykres <br> najedź na <br>'
-                               'wybrane województwo')
+                                'wybrane województwo')
 map_with_graph_panel = html.Div(children=[
         dbc.Row([
             dbc.Col([hover_map_graph], sm=12, md=4, lg=4),
@@ -118,14 +113,13 @@ def get_graphs_grid_as_subplots(voivs, voivodeship_names):
     return subplots_maps
 
 
-graph_shape_of_spread = dcc.Graph(id=GraphIDs.SHAPE_OF_SPREAD,
-                 style={'height': '600px'},
-                 config=dict(locale='pl'))
+graph_shape_of_spread = dcc.Graph(
+    id=GraphIDs.SHAPE_OF_SPREAD, style={'height': '600px'},
+    config=dict(locale='pl'))
 
 graph_day_change_piechart = dcc.Graph(id=GraphIDs.DAY_CASES_PIECHART,
-                     style={'height': '600px'})
+                                      style={'height': f'{TAB_GRAPH_HEIGHT}px'})
 
 graph_day_cases_per_week = dcc.Graph(id=GraphIDs.DAY_CASES_PER_WEEK,
-                     style={'height': '600px'})
-
-
+                                     style={'height': f'{TAB_GRAPH_HEIGHT}px'},
+                                     config=dict(locale='pl'))

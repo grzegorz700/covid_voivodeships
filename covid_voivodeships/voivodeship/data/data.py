@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class VoivodeshipTables:
     def __init__(self, name, data, comment=None):
         self.name = name
@@ -20,7 +21,8 @@ class Voivodeship:
 
     def get_total_state(self):
         df = self.tables['data'].data
-        df['commodity'] = df['commodity'].replace('Chorzy', 'Aktualnie zakażeni')
+        df['commodity'] = df['commodity'].replace('Chorzy',
+                                                  'Aktualnie zakażeni')
         df.country = [self.full_name] * df.shape[0]
         df = df.rename(columns={
             "commodity": "Grupa",
@@ -42,7 +44,7 @@ class Voivodeship:
         return df
 
     def get_state_daily(self):
-        if 'dataSource_przyrost' in self.tables:  #Data source before October
+        if 'dataSource_przyrost' in self.tables:  # Data source before October
             df = self.tables['dataSource_przyrost'].data
             df = df.rename(columns={
                 "country": "Data",
@@ -51,7 +53,7 @@ class Voivodeship:
                 "zar": "Zarazeni",
                 "zgo": "Zgony"
             })
-        elif 'dataSource_koronawirus' in self.tables: #Data source since October
+        elif 'dataSource_koronawirus' in self.tables:  # Data source since October
             df = self.tables['dataSource_koronawirus'].data
             df = df.rename(columns={
                 "dzien": "Data",
@@ -60,6 +62,9 @@ class Voivodeship:
                 "woj_zar": "Zarazeni",
                 "woj_zgo": "Zgony"
             })
+        else:
+            raise AssertionError("Some problem with the data source, check the"
+                                 "downloaded data")
         df.Data = pd.to_datetime(df.Data, dayfirst=True)
         df = df.set_index('Data')
         return df

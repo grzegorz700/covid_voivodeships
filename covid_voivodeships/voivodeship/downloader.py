@@ -3,7 +3,7 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
 from covid_voivodeships.voivodeship.parser import get_data_script, parse_data_script
-from covid_voivodeships.voivodeship.utils import _get_actual_date
+from covid_voivodeships.voivodeship.utils import get_actual_date
 
 
 def get_page_content_old(link, driver=None):
@@ -15,14 +15,14 @@ def get_page_content_old(link, driver=None):
 
 
 def get_page_content(link, driver=None):
-    page = requests.get(link).text # get the raw text of the request
+    page = requests.get(link).text  # get the raw text of the request
     return page
 
 
-def download_data(voivodeship_names, voivodeship_links, driver=None, verbose=False):
+def download_data(voivodeship_names, voivodeship_page_urls, driver=None, verbose=False):
     voivs = {}
-    act_date = _get_actual_date()
-    for idx, (voiv_name, voiv_link) in enumerate(zip(voivodeship_names, voivodeship_links)):
+    act_date = get_actual_date()
+    for idx, (voiv_name, voiv_link) in enumerate(zip(voivodeship_names, voivodeship_page_urls)):
         if verbose:
             print(f"[{idx+1:2}/16] {voiv_name}")
         page_content = get_page_content(voiv_link, driver)

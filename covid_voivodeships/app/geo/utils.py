@@ -44,13 +44,15 @@ def get_geo_df(voivs, voiv_name_to_dic, normalize=False, is_active_cases=False):
                 data_col = df['Przypadki'].astype(np.float)
                 df['Przypadki'] = normalize_by_population(voiv, data_col,
                                                           per_100k=True)
-            print("Active cases feature is not working after the 23.11, no proper data.", file=sys.stderr)
+            print("Active cases feature is not working after the 23.11,"
+                  " no proper data.", file=sys.stderr)
             ill_cases = df.loc['Aktualnie zakażeni'].Przypadki
         else:
             df = voiv.get_healthy_unhealthy()
             ill_cases = df.loc['Potwierdzone zakażenia', 'Liczba']
             if normalize:
-                ill_cases = normalize_by_population(voiv, float(ill_cases), per_100k=True)
+                ill_cases = normalize_by_population(voiv, float(ill_cases),
+                                                    per_100k=True)
         data.append([voiv_id, voiv_name, ill_cases])
     return pd.DataFrame(data, columns=['voiv_id', 'voiv_name', "ill"])
 
@@ -61,7 +63,6 @@ def get_map(df_ill_cases, pl_voiv_geojson, ill_name='Chorzy(nadal)'):
                         hover_name='voiv_name',
                         scope='europe',
                         hover_data=['ill'],
-                        #mapbox_style = 'white-bg',
                         color='ill',
                         color_continuous_scale="Reds",
                         # range_color=(0, 12),
@@ -69,13 +70,9 @@ def get_map(df_ill_cases, pl_voiv_geojson, ill_name='Chorzy(nadal)'):
                                 'ill': ill_name},
                         )
     fig.update_layout(
-        margin={"r": 0, "t": 0, "l": 0, "b": 0},
-        #geo=pl_voiv_geojson,
-        # mapbox=dict(bearing=0, pitch=0, zoom=100, center=dict(lat=45,lon=77))
+        margin={"r": 0, "t": 0, "l": 0, "b": 0}
     )
     fig.update_geos(fitbounds="locations")
     fig.update_xaxes(fixedrange=True)
     fig.update_yaxes(fixedrange=True)
-    # fig.layout.template = None
-    #fig.show()
     return fig

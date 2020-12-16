@@ -4,7 +4,7 @@ import os
 from covid_voivodeships.storage.structure import ProjectDataStructure
 
 
-def _load_links_with_names(root_dir='../..'):
+def load_voiv_urls_with_names():
     ps = ProjectDataStructure()
     pth = os.path.abspath(os.path.join(ps.data_dir, 'essential', 'voivodeship_links.txt'))
     with open(pth) as f:
@@ -17,5 +17,5 @@ def _load_links_with_names(root_dir='../..'):
     return voivodeship_links, voivodeship_names
 
 
-def _get_actual_date():
+def get_actual_date():
     return datetime.now().strftime("%Y_%m_%d-%H")

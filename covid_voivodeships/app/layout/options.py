@@ -5,18 +5,18 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 from covid_voivodeships.app.ids import OptionsIDs
-from covid_voivodeships.app.utils import _only_value_from_dict
+from covid_voivodeships.utils import only_value_from_dict
 from covid_voivodeships.plots.daily_cases import color_map
 from covid_voivodeships.voivodeship.data.utils import DEFAULT_START_DATE
-from covid_voivodeships.voivodeship.utils import _load_links_with_names
+from covid_voivodeships.voivodeship.utils import load_voiv_urls_with_names
 
 
-voivodeship_links, voivodeship_names = _load_links_with_names()
+voivodeship_links, voivodeship_names = load_voiv_urls_with_names()
 
 _columns = ['Chorzy', 'Zarazeni', 'Wyleczeni', 'Zgony']
 interested_columns_checklist = [{'label': v, 'value': v} for v in _columns]
 
-colors = color_map(_only_value_from_dict(interested_columns_checklist))
+colors = color_map(only_value_from_dict(interested_columns_checklist))
 
 normalize_slider = dcc.Slider(
     min=0,
@@ -32,8 +32,8 @@ normalize_slider = dcc.Slider(
 )
 
 average_form_group = dbc.FormGroup([
-    dbc.Label("Uśrednianie:", width=3), #, md=2, lg=1),
-    dbc.Col([normalize_slider], width=8, sm=8, md=6, lg=4)],
+    dbc.Label("Uśrednianie:", width=3),
+    dbc.Col([normalize_slider], width=9)], #, sm=8, md=6, lg=4
     row=True)
 
 normalization_form_group = dbc.FormGroup([
@@ -44,21 +44,13 @@ normalization_form_group = dbc.FormGroup([
     ], value=0), width=8),
 ], row=True)
 
-voivs_chooser_form_group = dbc.FormGroup([
-    dbc.Label("Wybierz województwa:", width=3),
-    dbc.Col([dcc.Dropdown(
-        id=OptionsIDs.VOIVS_NAMES_DROPDOWN,
-        options=[{'label': k, 'value': k} for k in voivodeship_names],
-        multi=True,
-        value=voivodeship_names)])
-], row=True)
 
 interested_data_form_group = dbc.FormGroup([
     dbc.Label("Co wyświetlić?", width=3),
     dbc.Col([dbc.Checklist(
         id=OptionsIDs.INTERESTED_DATA_PICKER,
         options=interested_columns_checklist,
-        value=_only_value_from_dict(interested_columns_checklist),
+        value=only_value_from_dict(interested_columns_checklist),
         labelStyle={'display': 'inline-block'},
         # 'background-color':['red', 'green','orange']},
         inline=True,
@@ -99,7 +91,6 @@ options = html.Div([
         dbc.Form([
             average_form_group,
             normalization_form_group,
-            voivs_chooser_form_group,
             interested_data_form_group,
             dbc.Alert("Nie wybrano nic do wyświetlenia!",
                       id=OptionsIDs.NO_INTEREST_ALERT,
@@ -110,8 +101,8 @@ options = html.Div([
             common_scale_form_group,
         ]),
         # columns_picker,
-    ])))
-], className="sticky-options")
+    ]), style={"width": "45rem"},))
+], className="sticky-options", style={'margin-bottom': '10px'})
 
 columns_picker = dcc.RadioItems(id=OptionsIDs.GRAPHS_COLUMNS_SWITCHER, options=[
             {'label': '4 columns', 'value': 4},

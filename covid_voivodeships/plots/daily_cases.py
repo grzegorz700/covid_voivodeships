@@ -10,6 +10,8 @@ from matplotlib import colors
 
 from covid_voivodeships.voivodeship.data.utils import fill_missing_dates, normalize_by_population
 
+_VOIV_COUNT = 16
+
 
 def color_map(columns):
     col_map_dic = {
@@ -25,7 +27,7 @@ def figure_daily(voivs, voivodeship_names, daily_change=False, moving_mean=0,
                  normalize=False, cols=4):
     locale.setlocale(locale.LC_TIME, "pl_PL.utf8")
     titles = [voivs[vol_name].full_name for vol_name in voivodeship_names]
-    rows = int(np.ceil(16/cols))
+    rows = int(np.ceil(_VOIV_COUNT/cols))
     fig = make_subplots(rows=rows, cols=cols,
                         subplot_titles=titles,
                         shared_xaxes='all')
@@ -35,10 +37,10 @@ def figure_daily(voivs, voivodeship_names, daily_change=False, moving_mean=0,
         fig_voiv = plot_single_voiv(voiv, daily_change, moving_mean, normalize)
         for trace in fig_voiv['data']:
             if not show_legend:
-                 trace.showlegend = False
+                trace.showlegend = False
             fig.add_trace(trace, row=int(idx/cols)+1, col=idx % cols + 1)
         show_legend = False
-    fig.update_layout(title_text="Dzienne zmiany") #height=800, width=1024,
+    fig.update_layout(title_text="Dzienne zmiany")
     return fig
 
 
@@ -56,12 +58,12 @@ def figure_daily_v2(voivs, voivodeship_names, daily_change=False, moving_mean=0,
         figs.append(single_plot)
 
     if with_shared_yaxis_lim:
-        datas = []
+        data = []
         for fig in figs:
-            datas += [np.nanmax(trace_data['y']) for trace_data in fig.data]
-        ymax= np.ceil(np.max(datas)*1.03)
+            data += [np.nanmax(trace_data['y']) for trace_data in fig.data]
+        y_max = np.ceil(np.max(data)*1.03)
         for fig in figs:
-            fig.update_layout(yaxis=dict(range=[0, ymax]))
+            fig.update_layout(yaxis=dict(range=[0, y_max]))
     return figs
 
 
@@ -97,47 +99,42 @@ def plot_single_voiv(voiv, daily_change, moving_mean, normalize, title=None,
             color = color_map([col])[0]
             color_rgba = colors.to_rgba(color, 0.65)
             color_rgba_str = f"rgba{color_rgba}"
-            fig_voiv.add_trace(go.Scatter(x=x, y=data[col], fill='tozeroy',
-                                          mode='none', name=col, fillcolor=color_rgba_str)) #fill='tonexty',
+            scatter = go.Scatter(x=x, y=data[col], fill='tozeroy', mode='none',
+                                 name=col, fillcolor=color_rgba_str)
+            fig_voiv.add_trace(scatter)
         fig_voiv.update_layout(title=title)
         if range_x is not None:
             fig_voiv.update_layout(xaxis=dict(range=range_x))
-        #fig_voiv = px.area(data, x=x, y=data_columns,
-        #                   color_discrete_sequence=color_map(data_columns),
-        #                   title=title)
     else:
-        fig_voiv = px.line(data, x=x, y=data_columns,
-                       color_discrete_sequence=color_map(data_columns), title=title, range_x=range_x)
+        fig_voiv = px.line(data, x=x, y=data_columns, range_x=range_x,
+                           color_discrete_sequence=color_map(data_columns),
+                           title=title)
     return fig_voiv
 
 
 def day_change_pie_chart(voivs, normalize=False):
-    datas = []
+    data_parts = []
     for voiv_name, voiv in voivs.items():
-        # df = voiv.get
         last_date_row = voiv.get_daily_change().iloc[-2:]
         val_columns = ["Zarazeni", "Wyleczeni", "Zgony"]
         if normalize:
-            real_values_df = last_date_row[val_columns].astype(np.float)  # Convert is important!
+            real_values_df = last_date_row[val_columns].astype(np.float)  # Bugfixed: Convert here is important!
             last_date_row[val_columns] = normalize_by_population(
                 voiv, real_values_df, per_100k=True)
         last_date_row['Voivodeship'] = voiv_name
-        datas.append(last_date_row)
-        # datas.append([voiv_name, last_date_row.Zarazeni, last_date_row.name])
-    df = pd.concat(datas)
-    dates = np.unique(df.index.values)
+        data_parts.append(last_date_row)
+    df = pd.concat(data_parts)
 
     # Get only last day with full information:
     dates = np.unique(df.index.values)
     date_to_display = sorted(dates)[-1]
     df_oneday = df[df.index == date_to_display]
-    if len(df_oneday) < 16:
+    if len(df_oneday) < _VOIV_COUNT:
         date_to_display = sorted(dates)[-2]
         df_oneday = df[df.index == date_to_display]
-    # df = pd.DataFrame(datas, columns=['Voiv', 'Sick', 'Date'])
-    ns = 1e-9  # number of seconds in a nanosecond, to convert datetime64[ns] to string
+    ns = 1e-9  # number of seconds in a nanosecond
     date_to_display = datetime.utcfromtimestamp(
-        date_to_display.astype(int) * ns)
+        date_to_display.astype(int) * ns)  # convert datetime64[ns] to string
     date_to_display_str = date_to_display.strftime('%Y-%m-%d')
     if date_to_display.date() == datetime.today().date():
         date_to_display_str += " (Dziś)"
@@ -146,7 +143,6 @@ def day_change_pie_chart(voivs, normalize=False):
     fig = px.pie(df_oneday, values='Zarazeni', names='Voivodeship',
                  title=date_to_display_str)
     fig.update_traces(textposition='inside', textinfo='percent+label+value')
-    pass
     return fig
 
 
@@ -160,9 +156,9 @@ def avg_cases_per_days_per_population(voivs):
     rdf = rdf.diff().rolling(7).mean()
 
     dfpx = pd.melt(rdf.reset_index(), id_vars='Data', var_name='Region',
-                   value_name='Cases/100k')
-    dfpx=dfpx.sort_values(["Region","Data"])
-    fig = px.line(dfpx, x="Data", y='Cases/100k',
+                   value_name='Przypadki/100k')
+    dfpx=dfpx.sort_values(["Region", "Data"])
+    fig = px.line(dfpx, x="Data", y='Przypadki/100k',
                   title='Średnia liczba przypadków przez 7 dni na 100 tyś. populacji',
                   line_group="Region", hover_name="Region", color="Region")
     fig.update_layout(xaxis=dict(
@@ -202,9 +198,10 @@ def avg_cases_per_days_per_population(voivs):
     return fig
 
 
-def get_separate_voiv_plots(voivs, voivodeship_names, voiv_names, daily_change=False, normalize=False,
-                            moving_mean=0, columns=None, filled_area=False,
-                            start_date=None, end_date=None, with_shared_yaxis_lim=False):
+def get_separate_voiv_plots(voivs, voivodeship_names, daily_change=False,
+                            normalize=False, moving_mean=0, columns=None,
+                            filled_area=False, start_date=None, end_date=None,
+                            with_shared_yaxis_lim=False):
     print("Request: plot separate")
     figs = figure_daily_v2(voivs, voivodeship_names, daily_change=daily_change,
                            moving_mean=moving_mean, normalize=normalize,
@@ -212,50 +209,51 @@ def get_separate_voiv_plots(voivs, voivodeship_names, voiv_names, daily_change=F
                            start_date=start_date, end_date=end_date,
                            with_shared_yaxis_lim=with_shared_yaxis_lim)
     graphs = []
-    show_legend=True
+    show_legend = True
     for idx, vol_name in enumerate(voivodeship_names):
-        if vol_name in voiv_names:
-            fig = figs[idx]
-            fig.update_layout(
-                showlegend=show_legend,
-                legend=dict(orientation="h",
-                            yanchor="bottom",
-                            y=1.02,
-                            xanchor="right",
-                            x=1
-                            ),
-                margin={'l': 0,'r': 0, 't': 50, 'b': 0},
-                xaxis=dict(
-                    rangeselector=dict(
-                        buttons=list([
-                            dict(count=1,
-                                 label="1m",
-                                 step="month",
-                                 stepmode="backward"),
-                            dict(count=6,
-                                 label="6m",
-                                 step="month",
-                                 stepmode="backward"),
-                            dict(count=1,
-                                 label="YTD",
-                                 step="year",
-                                 stepmode="todate"),
-                            dict(count=1,
-                                 label="1y",
-                                 step="year",
-                                 stepmode="backward"),
-                            dict(step="all")
-                        ])
-                    ),
-                    rangeslider=dict(
-                        visible=False  # False - default value
-                    ),
-                    type="date"
-                )
+        fig = figs[idx]
+        fig.update_layout(
+            showlegend=show_legend,
+            legend=dict(orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
+                        ),
+            margin={'l': 0,'r': 0, 't': 50, 'b': 0},
+            xaxis=dict(
+                rangeselector=dict(
+                    buttons=list([
+                        dict(count=1,
+                             label="1m",
+                             step="month",
+                             stepmode="backward"),
+                        dict(count=3,
+                             label="3m",
+                             step="month",
+                             stepmode="backward"),
+                        dict(count=6,
+                             label="6m",
+                             step="month",
+                             stepmode="backward"),
+                        #dict(count=1,
+                        #     label="YTD",
+                        #     step="year",
+                        #     stepmode="todate"),
+                        dict(count=1,
+                             label="1rok",
+                             step="year",
+                             stepmode="backward"),
+                        dict(label="Całość",
+                            step="all")
+                    ])
+                ),
+                rangeslider=dict(
+                    visible=False  # False - default value
+                ),
+                type="date"
             )
-        else:
-            fig = None  # TODO: optimize it
-        graph = fig
-        graphs.append(graph)
+        )
+        graphs.append(fig)
         show_legend = False
     return graphs

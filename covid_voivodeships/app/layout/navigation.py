@@ -10,8 +10,9 @@ tabs = html.Div([
             dbc.Tab(label="Wojewodztwa siatka", tab_id=IDS.Tab.VOIV_GRID),
             dbc.Tab(label="Skala zachorowalności w czasie",
                     tab_id=IDS.Tab.LINE_SPREAD),
-            dbc.Tab(label="Wykres kołowy", tab_id=IDS.Tab.DAILY_PIECHART),
-            dbc.Tab(label="Liczba przypadków przez 7 dni", tab_id=IDS.Tab.CASES_PER_WEEK),
+            dbc.Tab(label="Udział dziennych przypadków", tab_id=IDS.Tab.DAILY_PIECHART),
+            dbc.Tab(label="Liczba przypadków przez 7 dni",
+                    tab_id=IDS.Tab.CASES_PER_WEEK),
         ],
         id=IDS.Tab.TAB_BAR,
         active_tab=IDS.Tab.VOIV_GRID,
@@ -21,19 +22,8 @@ tabs = html.Div([
 
 navbar = dbc.NavbarSimple(
         children=[
-            dbc.NavItem(dbc.NavLink("Dzienna zmiana", href='/' + IDS.Page.DAILY_CHANGE)),
-            dbc.NavItem(dbc.NavLink("Dzienny wynik", href='/' + IDS.Page.DAILY_STATE)),
-            # dbc.DropdownMenu(
-            #     children=[
-            #         dbc.DropdownMenuItem("More pages", header=True),
-            #         dbc.DropdownMenuItem("Page 2", href="#"),
-            #         dbc.DropdownMenuItem("Page 3", href="#"),
-            #     ],
-            #     nav=True,
-            #     in_navbar=True,
-            #     label="More",
-            # ),
-            # options
+            dbc.NavItem(dbc.NavLink("Dzienna zmiany", href='/' + IDS.Page.DAILY_CHANGE)),
+            dbc.NavItem(dbc.NavLink("Dzienny stan", href='/' + IDS.Page.DAILY_STATE)),
         ],
         brand="Koronawirus w województwach",
         brand_href="#",
