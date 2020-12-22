@@ -11,7 +11,10 @@ class ProjectDataStructure(metaclass=SingletonMeta):
         config_object = ConfigParser()
         module_path = os.path.abspath(os.path.dirname(covid_voivodeships.__file__))
         project_root_path = os.path.join(module_path, '..')
-        config_object.read(os.path.join(project_root_path, 'config.ini'))
+        config_file = os.path.join(project_root_path, 'config.ini')
+        if not os.path.exists(config_file):
+            raise FileNotFoundError('Config file "config.ini" does not exist')
+        config_object.read(config_file)
         store_config = config_object["STORE_CONFIG"]
 
         if store_config['is_relative_data']:
