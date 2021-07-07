@@ -2,7 +2,7 @@ import json
 from unidecode import unidecode
 
 from IPython.display import display
-import _jsonnet
+import js2py
 import pandas as pd
 from bs4 import BeautifulSoup, Comment
 
@@ -59,7 +59,7 @@ def parse_data_script(data_script, verbose=False):
                 print_if_required('Value = ', value)
                 variables[variable_name] = value
             else:
-                values = json.loads(_jsonnet.evaluate_snippet('snippet', d))
+                values = js2py.eval_js(d)
                 df_values = pd.DataFrame(values)
                 if verbose:
                     display(df_values)

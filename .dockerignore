@@ -1,0 +1,15 @@
+# Pycharm, Git, Jupyter ignore:
+**/.ipynb_checkpoints
+.idea
+**/__pycache__
+.git
+
+# Ignore data that is redundant for deploy
+data
+!/data/topologies
+!/data/essential
+recording-webapp.gif
+**/*.ipynb
+
+#Config file:
+config.ini
